@@ -20,8 +20,8 @@ const Login = () => {
       const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
         method: "POST",
         headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -49,7 +49,7 @@ const Login = () => {
       {/* Fondo con leve transparencia para la tarjeta */}
       <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full sm:w-96">
         <h2 className="text-4xl text-gray-800 text-center font-bold mb-6">Login</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="text-gray-800 text-sm font-semibold">Email</label>
@@ -63,7 +63,7 @@ const Login = () => {
               required
             />
           </div>
-          
+
           <div className="mb-6">
             <label htmlFor="password" className="text-gray-800 text-sm font-semibold">Password</label>
             <input
@@ -76,7 +76,7 @@ const Login = () => {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
