@@ -112,9 +112,7 @@ const Home: React.FC = () => {
           console.log(data);
           setError(null); // Limpiar el error
           setOpenSnackbar(true); // Abrir Snackbar de éxito
-          setTimeout(() => {
-            navigate("/home"); // Redirigir al dashboard o página principal
-          }, 3000); // Esperar 3 segundos antes de redirigir
+          navigate("/home");
         } else {
           const errorData = await response.json();
           setError(errorData || "Hubo un error");
@@ -133,7 +131,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen pt-8 pb-16 px-8 flex flex-col justify-start items-center space-y-12">
+      <div className="w-full min-h-screen pt-8 pb-16 px-8 md:px-72 flex flex-col justify-start items-center space-y-12">
         <h1 className="text-xl font-bold">WalletSheet</h1>
 
         <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-8 pb-12">

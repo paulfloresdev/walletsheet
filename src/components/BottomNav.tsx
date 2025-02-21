@@ -1,36 +1,52 @@
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { CalendarMonth, CreditCard, Home } from "@mui/icons-material";
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Obtener la ruta actual
 
+  // Verificar si la ruta corresponde a una página de mes (/month/:year/:monthNumber)
+  const isMonthPage = /^\/month(\/\d{4}\/\d{1,2})?$/.test(location.pathname);
+
   return (
     <BottomNavigation
       showLabels
       value={location.pathname} // Usa la ruta actual como valor
-      onChange={(event, newValue) => navigate(newValue)}
-      sx={{ position: "fixed", bottom: 0, left: 0, width: "100%", boxShadow: 4, zIndex: 50 }}
+      onChange={(event, newValue) => navigate(newValue)} // Navega a la nueva ruta
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        boxShadow: 4,
+        zIndex: 50,
+      }}
     >
       <BottomNavigationAction
         label="Inicio"
         icon={<Home />}
-        value="/"
-        sx={{ color: location.pathname === "/" ? "primary.main" : "text.secondary" }}
+        value="/home"
+        sx={{
+          color: location.pathname === "/home" ? "primary.main" : "text.secondary",
+        }}
       />
       <BottomNavigationAction
         label="Meses"
         icon={<CalendarMonth />}
-        value="/perfil"
-        sx={{ color: location.pathname === "/perfil" ? "primary.main" : "text.secondary" }}
+        value="/months"
+        sx={{
+          // Resalta "Meses" si estamos en la página de meses o en cualquier ruta de tipo /month/:year/:monthNumber
+          color: location.pathname === "/months" || isMonthPage ? "primary.main" : "text.secondary",
+        }}
       />
       <BottomNavigationAction
-        label="Cuentas y tarjetas"
+        label="Cuentas de banco"
         icon={<CreditCard />}
-        value="/configuracion"
-        sx={{ color: location.pathname === "/configuracion" ? "primary.main" : "text.secondary" }}
+        value="/accounts"
+        sx={{
+          color: location.pathname === "/accounts" ? "primary.main" : "text.secondary",
+        }}
       />
     </BottomNavigation>
   );

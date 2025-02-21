@@ -5,7 +5,8 @@ import NotFound from '../components/NotFound'; // Componente 404
 const SplashScreen = React.lazy(() => import("../views/SplashScreen.tsx"));
 const Home = React.lazy(() => import("../views/Home.tsx"));
 const Login = React.lazy(() => import("../views/Login.tsx"));
-
+const MonthList = React.lazy(() => import("../views/MonthList.tsx"));
+const Month = React.lazy(() => import("../views/Month.tsx"));
 
 const AppRoutes = () => (
     <Routes>
@@ -31,6 +32,22 @@ const AppRoutes = () => (
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Login/>
+                </React.Suspense>
+            }
+        />
+        <Route
+            path="/months"
+            element={
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <MonthList/>
+                </React.Suspense>
+            }
+        />
+        <Route
+            path="/month/"
+            element={
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <Month/>
                 </React.Suspense>
             }
         />
