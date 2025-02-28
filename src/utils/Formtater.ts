@@ -16,3 +16,12 @@ export const formatCurrency = (amount: number): string => {
   return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 };
 
+
+export const formatTransactionType = (script: string): string => {
+  if (script === 'debit') {
+    return 'Débito';
+  } else if (script === 'credit') {
+    return 'Crédito';
+  }
+  return 'Tipo desconocido'; // En caso de que el valor no sea 'debit' ni 'credit'
+};

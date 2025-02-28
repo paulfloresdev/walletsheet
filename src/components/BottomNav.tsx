@@ -22,7 +22,7 @@ const BottomNav = () => {
         boxShadow: 4,
         zIndex: 50,
       }}
-    >
+    > 
       <BottomNavigationAction
         label="Inicio"
         icon={<Home />}
@@ -38,6 +38,7 @@ const BottomNav = () => {
         sx={{
           // Resalta "Meses" si estamos en la página de meses o en cualquier ruta de tipo /month/:year/:monthNumber
           color: location.pathname === "/months" || isMonthPage ? "primary.main" : "text.secondary",
+          fontSize: location.pathname === "/months" || isMonthPage ? '1.2rem' : '1.2rem', // Ajusta el tamaño de la letra
         }}
       />
       <BottomNavigationAction

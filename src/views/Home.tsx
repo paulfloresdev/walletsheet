@@ -6,6 +6,7 @@ import { useFetchIndexAccount, useFetchIndexCategories } from "../hooks/useFetch
 import { NumericFormat } from "react-number-format";
 import { getApiBaseUrl } from "../utils/apiConfig";
 import { useNavigate } from "react-router-dom";
+import { formatTransactionType } from "../utils/Formtater";
 
 const movements = [
   {
@@ -57,15 +58,6 @@ const Home: React.FC = () => {
       refetchAccounts(); // Hacer refetch cuando movementType cambie
     }
   }, [movementType, refetchAccounts]); // Dependencia en movementType
-
-  const getTransactionType = (script: string): string => {
-    if (script === 'debit') {
-      return 'Débito';
-    } else if (script === 'credit') {
-      return 'Crédito';
-    }
-    return 'Tipo desconocido'; // En caso de que el valor no sea 'debit' ni 'credit'
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,7 +190,7 @@ const Home: React.FC = () => {
             ) : (
               accountsData?.data.map((option: any) => (
                 <MenuItem key={option.id} value={option.id}>
-                  {`${getTransactionType(option.type)} - ${option.bank_name}`}
+                  {`${formatTransactionType(option.type)} - ${option.bank_name}`}
                 </MenuItem>
               ))
             )}
