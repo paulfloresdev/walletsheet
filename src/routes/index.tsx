@@ -7,6 +7,8 @@ const Home = React.lazy(() => import("../views/Home.tsx"));
 const Login = React.lazy(() => import("../views/Login.tsx"));
 const MonthList = React.lazy(() => import("../views/MonthList.tsx"));
 const Month = React.lazy(() => import("../views/Month.tsx"));
+const Transaction = React.lazy(() => import("../views/Transaction.tsx"));
+const EditTransaction = React.lazy(() => import("../views/EditTransaction.tsx"));
 
 const AppRoutes = () => (
     <Routes>
@@ -48,6 +50,22 @@ const AppRoutes = () => (
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <Month/>
+                </React.Suspense>
+            }
+        />
+        <Route
+            path="/transaction/"
+            element={
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <Transaction></Transaction>
+                </React.Suspense>
+            }
+        />
+        <Route
+            path="/transaction/edit/"
+            element={
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <EditTransaction></EditTransaction>
                 </React.Suspense>
             }
         />

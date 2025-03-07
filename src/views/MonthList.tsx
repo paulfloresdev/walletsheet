@@ -33,46 +33,55 @@ const MonthList: React.FC = () => {
       <h1 className="text-xl font-bold">WalletSheet</h1>
 
       {/** FILTRO POR AÑO */}
-      <TextField
-        required
-        className="w-full"
-        id="year"
-        select
-        label="Filtro"
-        value={selectedYear}
-        helperText="Filtrar por año"
-        onChange={(e) => setSelectedYear(e.target.value as number | "all")}
-      >
-        <MenuItem value="all">Todos</MenuItem>  {/* Opción para todos los años */}
-        {uniqueYears?.map((year) => (
-          <MenuItem key={year} value={year}>
-            {year}
-          </MenuItem>
-        ))}
-      </TextField>
+      <div className="w-full flex flex-col items-start space-y-4">
+        <h1 className="text-base">Filtro de búsqueda</h1>
+        <TextField
+          required
+          className="w-full md:w-1/4"
+          id="year"
+          select
+          label="Año"
+          value={selectedYear}
+          helperText="Filtrar por año"
+          onChange={(e) => setSelectedYear(e.target.value as number | "all")}
+        >
+          <MenuItem value="all">Todos</MenuItem>  {/* Opción para todos los años */}
+          {uniqueYears?.map((year) => (
+            <MenuItem key={year} value={year}>
+              {year}
+            </MenuItem>
+          ))}
+        </TextField>
+      </div>
+      
 
       {/** LISTADO DE MESES CON MOVIMIENTOS */}
-      <div className="w-full flex flex-col space-y-6">
-        <h1 className="text-base font-medium text-center">Meses con transacciones</h1>
-        {Array.isArray(filteredData) && filteredData.length > 0 ? (
-          filteredData.map((item: any) => (
-            <button
-              onClick={() => {
-                const month = item.month_number;
-                const year = item.year;
-                navigate("/month", { state: { month, year } });
-              }}
-              key={item.month_number}
-              className="w-full hover:bg-gray-100 border-2 border-solid border-primary rounded-lg p-4 flex flex-row justify-between"
-            >
-              <h1 className="text-gray-700">{`${fortmatMonth(item.month_number)} ${item.year}`}</h1>
-              <ArrowForwardIos fontSize="small" />
-            </button>
-          ))
-        ) : (
-          <p className="text-center">No se encontraron meses con transacciones.</p>
-        )}
-      </div>
+      {Array.isArray(filteredData) && filteredData.length > 0 ? (
+            <div className="w-full flex flex-col space-y-4 pb-20 items-start">
+              <h1 className="text-base">{`Meses con transacciones ${selectedYear === 'all' ? '' : `en ${selectedYear}`} (${filteredData?.length.toString()})`}</h1>
+              <div className="w-full grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-4">
+                {
+                  filteredData.map((item: any) => (
+                    <button
+                      onClick={() => {
+                        const month = item.month_number;
+                        const year = item.year;
+                        navigate("/month", { state: { month, year } });
+                      }}
+                      key={item.month_number}
+                      className="w-full hover:bg-gray-100 border-2 border-solid border-primary rounded-lg p-4 flex flex-col space-y-4 justify-center items-center"
+                    >
+                      <h1 className="font-medium">{fortmatMonth(item.month_number)}</h1>
+                      <h1 className="text-sm">{item.year}</h1>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+            
+          ) : (
+            <p className="text-center">No se encontraron meses con transacciones.</p>
+          )}
 
       <BottomNav />
     </div>

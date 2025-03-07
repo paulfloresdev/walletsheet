@@ -17,13 +17,22 @@ export const formatCurrency = (amount: number): string => {
 
 
 
-export const formatTransactionType = (script: string): string => {
+export const formatAccountType = (script: string): string => {
   if (script === 'debit') {
     return 'Débito';
   } else if (script === 'credit') {
     return 'Crédito';
   }
   return 'Tipo desconocido'; // En caso de que el valor no sea 'debit' ni 'credit'
+};
+
+export const formatTransactionType = (script: string): string => {
+  if (script === 'income') {
+    return 'Ingreso';
+  } else if (script === 'expense') {
+    return 'Egreso';
+  }
+  return 'Pago de tarjeta de crédito'; // En caso de que el valor no sea 'debit' ni 'credit'
 };
 
 export const formatDate = (dateString: string) => {

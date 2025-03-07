@@ -1,7 +1,7 @@
 // components/Month.tsx
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { formatCurrency, formatDate, formatTransactionType, fortmatMonth } from "../utils/Formtater";
+import { useLocation, useNavigate } from "react-router-dom";
+import { formatCurrency, formatDate, formatAccountType, fortmatMonth } from "../utils/Formtater";
 import { useFetchMonthData } from "../hooks/useFetch";
 import { useAuth } from "../context/AuthContext";
 import BottomNav from "../components/BottomNav";
@@ -13,6 +13,7 @@ import CategoryIcon from "../components/CategoryIcon";
 const Month: React.FC = () => {
     const { token } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Obtenemos el mes y el año desde el state pasado por navigate
     const { month, year } = location.state || { month: null, year: null };
@@ -45,7 +46,7 @@ const Month: React.FC = () => {
 
             <h1 className="text-base font-medium text-center">{`${fortmatMonth(month ?? 0)} ${year}`}</h1>
 
-            <div className="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 space-x-0 md:space-x-8">
+            <div className="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 space-x-0 md:space-x-8 pb-20">
                 <div className="w-full md:w-1/2 flex flex-col space-y-8">
                     <div className="w-full space-y-4">
                         <h1>Cuentas de débito ({data?.balances.filter((option: any) => option.type === 'debit').length})</h1>
@@ -64,7 +65,10 @@ const Month: React.FC = () => {
                 <div className="w-full flex flex-col">
                     <h1>Transacciones ({data?.transactions.length})</h1>
                     {data?.transactions.map((transaction: any) => (
-                        <div key={transaction.id} className="w-full border-b-2 border-gray-100 py-8 hover:bg-gray-50">
+                        <div key={transaction.id} className="w-full border-b-2 border-gray-100 py-8 hover:bg-gray-50"
+                            onClick={() => {
+                                navigate("/transaction", { state: { transaction } });
+                            }}>
                             <div className="w-full flex flex-row justify-between">
                                 <div className="flex flex-row space-x-2">
                                     <div className="w-12 h-12 bg-gray-100 rounded-full flex flex-col items-center justify-center">

@@ -5,8 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import { useFetchIndexAccount, useFetchIndexCategories } from "../hooks/useFetch";
 import { NumericFormat } from "react-number-format";
 import { getApiBaseUrl } from "../utils/apiConfig";
-import { useNavigate } from "react-router-dom";
-import { formatTransactionType } from "../utils/Formtater";
+import { useLocation, useNavigate } from "react-router-dom";
+import { formatAccountType } from "../utils/Formtater";
 
 const movements = [
   {
@@ -26,6 +26,9 @@ const movements = [
 const Home: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { transaction } = location.state || { transaction:null };
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -209,6 +212,7 @@ const Home: React.FC = () => {
           <h1 className="text-base font-medium text-center">Información general</h1>
           <div className="w-full flex flex-row space-x-6">
             <TextField
+              disabled={transaction}
               required
               className="w-full"
               id="movement-type"
@@ -219,6 +223,11 @@ const Home: React.FC = () => {
               onChange={(e) => {
                 const value = Number(e.target.value);
                 setMovementType(value);  // Actualiza el tipo de movimiento
+                
+                if(movementType !== 2){
+                  setSelectedCategory(8);
+                }
+                
               }}
             >
               {movements.map((option) => (
@@ -228,12 +237,13 @@ const Home: React.FC = () => {
               ))}
             </TextField>
             <TextField
+              disabled={movementType !== 2}
               required
               className="w-full"
               id="movement-type"
               select
               label="Categoría"
-              value={selectedCategory}
+              value={movementType !== 2 ? 8 :  selectedCategory}
               helperText="Selecciona la categoría*"
               onChange={(e) => {
                 const value = Number(e.target.value);
@@ -271,7 +281,7 @@ const Home: React.FC = () => {
                   ) : (
                     accountsData?.filter((option: any) => option.type === "debit").map((option: any) => (
                       <MenuItem key={option.id} value={option.id}>
-                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                        {`${formatAccountType(option.type)} - ${option.bank_name}`}
                       </MenuItem>
                     ))
                   )}
@@ -297,7 +307,7 @@ const Home: React.FC = () => {
                   ) : (
                     accountsData?.filter((option: any) => option.type === "credit").map((option: any) => (
                       <MenuItem key={option.id} value={option.id}>
-                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                        {`${formatAccountType(option.type)} - ${option.bank_name}`}
                       </MenuItem>
                     ))
                   )}
@@ -327,12 +337,12 @@ const Home: React.FC = () => {
                   movementType === 1 ?
                     accountsData?.filter((option: any) => option.type === "debit").map((option: any) => (
                       <MenuItem key={option.id} value={option.id}>
-                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                        {`${formatAccountType(option.type)} - ${option.bank_name}`}
                       </MenuItem>
-                    )) :
-                    accountsData?.filter((option: any) => option.type === "credit").map((option: any) => (
+                    )) : 
+                    accountsData?.map((option: any) => (
                       <MenuItem key={option.id} value={option.id}>
-                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                        {`${formatAccountType(option.type)} - ${option.bank_name}`}
                       </MenuItem>
                     ))
                 )}
@@ -387,6 +397,7 @@ const Home: React.FC = () => {
               fullWidth
             />
             <TextField
+              required
               label="Fecha de aplicación"
               helperText="Ingresa la fecha en que se aplicará"
               type="date"

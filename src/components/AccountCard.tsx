@@ -1,5 +1,5 @@
 import React from "react";
-import { formatCurrency, formatTransactionType } from "../utils/Formtater";
+import { formatAccountType, formatCurrency } from "../utils/Formtater";
 
 interface AccountCardProps {
     account: any;
@@ -9,7 +9,7 @@ const AccountCard: React.FC<AccountCardProps> = ({ account }) => {
     return <div className="w-full p-4 border-2 border-solid border-primary rounded-lg" key={account.id}>
         <div className="w-full flex flex-col items-start">
             <h1 className="font-medium">{account.name}</h1>
-            <h1 className="text-sm text-gray-500 font-medium">{formatTransactionType(account.type)}</h1>
+            <h1 className="text-sm text-gray-500 font-medium">{formatAccountType(account.type)}</h1>
 
             {
                 account.type === 'debit' ?

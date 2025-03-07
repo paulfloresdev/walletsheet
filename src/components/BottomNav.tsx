@@ -6,8 +6,10 @@ const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Obtener la ruta actual
 
-  // Verificar si la ruta corresponde a una página de mes (/month/:year/:monthNumber)
-  const isMonthPage = /^\/month(\/\d{4}\/\d{1,2})?$/.test(location.pathname);
+  // Verificar si la ruta corresponde a una página de mes (/month/:year/:monthNumber) o a /transaction o /transaction/edit
+  const isMonthPage = /^\/month(\/\d{4}\/\d{1,2})?$/.test(location.pathname) || 
+                      location.pathname === "/transaction" || 
+                      location.pathname === "/transaction/edit";
 
   return (
     <BottomNavigation
@@ -36,7 +38,7 @@ const BottomNav = () => {
         icon={<CalendarMonth />}
         value="/months"
         sx={{
-          // Resalta "Meses" si estamos en la página de meses o en cualquier ruta de tipo /month/:year/:monthNumber
+          // Resalta "Meses" si estamos en la página de meses o en cualquier ruta de tipo /month/:year/:monthNumber, /transaction o /transaction/edit
           color: location.pathname === "/months" || isMonthPage ? "primary.main" : "text.secondary",
           fontSize: location.pathname === "/months" || isMonthPage ? '1.2rem' : '1.2rem', // Ajusta el tamaño de la letra
         }}
