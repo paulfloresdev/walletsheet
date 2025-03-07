@@ -1,10 +1,10 @@
 import { getApiBaseUrl } from "../utils/apiConfig";
 
-export const fetchIndexAccount = async (token: string, filter: number) => {
+export const fetchIndexAccount = async (token: string) => {
     const baseUrl = getApiBaseUrl();
     if (!baseUrl) throw new Error("Base URL is undefined");
 
-    const url = `${baseUrl}/accounts/filter/${filter}`; // Construcción manual de la URL
+    const url = `${baseUrl}/accounts/`; // Construcción manual de la URL
 
     const response = await fetch(url, {
         method: 'GET',

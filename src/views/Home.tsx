@@ -19,7 +19,7 @@ const movements = [
   },
   {
     value: 3,
-    label: 'Pago',
+    label: 'Pago de tarjeta de crédito',
   }
 ];
 
@@ -33,6 +33,8 @@ const Home: React.FC = () => {
 
   const [movementType, setMovementType] = useState<number>();
   const [selectedCard, setSelectedCard] = useState<number>();
+  const [selectedCardA, setSelectedCardA] = useState<number>();
+  const [selectedCardB, setSelectedCardB] = useState<number>();
   const [selectedCardType, setSelectedCardType] = useState<String>("");
   const [amount, setAmount] = useState<number>();
   const [transacctionDate, setTransactionDate] = useState<string>("");
@@ -42,7 +44,8 @@ const Home: React.FC = () => {
   const [place, setPlace] = useState<string>("");
   const [note, setNote] = useState<string>("");
 
-  const { data: accountsData, isLoading: isLoadingAccounts, error: errorAccounts, refetch: refetchAccounts } = useFetchIndexAccount(token ?? '', movementType ?? 4);
+  const { data: accountsData, isLoading: isLoadingAccounts, error: errorAccounts, refetch: refetchAccounts } = useFetchIndexAccount(token ?? '');
+
   const { data: categoriesData, isLoading: isLoadingCategories, error: errorCategories, refetch: refetchCategories } = useFetchIndexCategories(token ?? '');
   // Sincronizar selectedCard con los datos recibidos de las cuentas
   useEffect(() => {
@@ -63,62 +66,137 @@ const Home: React.FC = () => {
     e.preventDefault();
     setLoading(true); // Activar el loading
 
-    // Verificar si todos los campos están completos
-    if (movementType !== null && selectedCategory !== null && selectedCard !== null && concept !== "" && amount !== null && transacctionDate !== "") {
-      console.log("Datos enviados:", JSON.stringify({
-        type: movementType === 1 ? 'income' : movementType === 2 ? 'expense' : 'payment',
-        amount: amount,
-        concept: concept,
-        transaction_date: transacctionDate,
-        accounting_date: accountingDate,
-        category_id: selectedCategory,
-        place: place,
-        note: note,
-        account_id: selectedCard,
-      }));
+    if (movementType === 3) {
+      if (movementType !== null && selectedCategory !== null && selectedCardA !== null && selectedCardB !== null && concept !== "" && amount !== null && transacctionDate !== "") {
+        try {
+          // Usar la URL base desde el archivo apiConfig
+          const response = await fetch(`${getApiBaseUrl()}/transactions`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              type: 'payment',
+              amount: Number(amount),
+              concept: concept,
+              transaction_date: new Date(transacctionDate).toISOString().split("T")[0],
+              accounting_date: new Date(accountingDate).toISOString().split("T")[0],
+              category_id: selectedCategory,
+              place: place,
+              note: note,
+              account_id: selectedCardA,
+            })
+          });
 
-      try {
-        // Usar la URL base desde el archivo apiConfig
-        const response = await fetch(`${getApiBaseUrl()}/transactions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            type: movementType === 1 ? 'income' : movementType === 2 ? 'expense' : 'payment',
-            amount: Number(amount),
-            concept: concept,
-            transaction_date: new Date(transacctionDate).toISOString().split("T")[0],
-            accounting_date: new Date(accountingDate).toISOString().split("T")[0],
-            category_id: selectedCategory,
-            place: place,
-            note: note,
-            account_id: selectedCard,
-          })
-        });
-
-        // Verificar si la respuesta fue exitosa
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          setError(null); // Limpiar el error
-          setOpenSnackbar(true); // Abrir Snackbar de éxito
-          navigate("/home");
-        } else {
-          const errorData = await response.json();
-          setError(errorData || "Hubo un error");
+          // Verificar si la respuesta fue exitosa
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            setError(null); // Limpiar el error
+            setOpenSnackbar(true); // Abrir Snackbar de éxito
+            navigate("/home");
+          } else {
+            const errorData = await response.json();
+            setError(errorData || "Hubo un error");
+          }
+        } catch (error) {
+          setError("Hubo un problema con la conexión al servidor");
+          console.error("Error de conexión:", error);
+        } finally {
+          setLoading(false); // Desactivar el loading
         }
-      } catch (error) {
-        setError("Hubo un problema con la conexión al servidor");
-        console.error("Error de conexión:", error);
-      } finally {
-        setLoading(false); // Desactivar el loading
+
+        try {
+          // Usar la URL base desde el archivo apiConfig
+          const response = await fetch(`${getApiBaseUrl()}/transactions`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              type: 'income',
+              amount: Number(amount),
+              concept: concept,
+              transaction_date: new Date(transacctionDate).toISOString().split("T")[0],
+              accounting_date: new Date(accountingDate).toISOString().split("T")[0],
+              category_id: selectedCategory,
+              place: place,
+              note: note,
+              account_id: selectedCardB,
+            })
+          });
+
+          // Verificar si la respuesta fue exitosa
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            setError(null); // Limpiar el error
+            setOpenSnackbar(true); // Abrir Snackbar de éxito
+            navigate("/home");
+          } else {
+            const errorData = await response.json();
+            setError(errorData || "Hubo un error");
+          }
+        } catch (error) {
+          setError("Hubo un problema con la conexión al servidor");
+          console.error("Error de conexión:", error);
+        } finally {
+          setLoading(false); // Desactivar el loading
+        }
+      } else {
+        setError("Debes capturar correctamente los campos requeridos.");
+        setLoading(false); // Desactivar el loading en caso de error
       }
     } else {
-      setError("Debes capturar correctamente los campos requeridos.");
-      setLoading(false); // Desactivar el loading en caso de error
+      // Verificar si todos los campos están completos
+      if (movementType !== null && selectedCategory !== null && selectedCard !== null && concept !== "" && amount !== null && transacctionDate !== "") {
+        try {
+          // Usar la URL base desde el archivo apiConfig
+          const response = await fetch(`${getApiBaseUrl()}/transactions`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              type: movementType === 1 ? 'income' : movementType === 2 ? 'expense' : 'payment',
+              amount: Number(amount),
+              concept: concept,
+              transaction_date: new Date(transacctionDate).toISOString().split("T")[0],
+              accounting_date: new Date(accountingDate).toISOString().split("T")[0],
+              category_id: selectedCategory,
+              place: place,
+              note: note,
+              account_id: selectedCard,
+            })
+          });
+
+          // Verificar si la respuesta fue exitosa
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            setError(null); // Limpiar el error
+            setOpenSnackbar(true); // Abrir Snackbar de éxito
+            navigate("/home");
+          } else {
+            const errorData = await response.json();
+            setError(errorData || "Hubo un error");
+          }
+        } catch (error) {
+          setError("Hubo un problema con la conexión al servidor");
+          console.error("Error de conexión:", error);
+        } finally {
+          setLoading(false); // Desactivar el loading
+        }
+      } else {
+        setError("Debes capturar correctamente los campos requeridos.");
+        setLoading(false); // Desactivar el loading en caso de error
+      }
     }
+
+
   };
 
   return (
@@ -169,32 +247,98 @@ const Home: React.FC = () => {
               ))}
             </TextField>
           </div>
-          <TextField
-            required
-            className="w-full"
-            id="account-select"
-            select
-            label="Cuenta de banco"
-            value={selectedCard}
-            helperText="Selecciona una cuenta de banco*"
-            onChange={(e) => {
-              const value = Number(e.target.value);  // Convertir a número
-              setSelectedCard(value);  // Actualiza la tarjeta seleccionada
+          {
+            (movementType === 3) ?
+              <div className="w-full flex flex-col space-y-8">
+                <TextField
+                  disabled={movementType === undefined}
+                  required
+                  className="w-full"
+                  id="account-select"
+                  select
+                  label="Cuenta de débito"
+                  value={selectedCardA}
+                  helperText="Selecciona la cuenta de banco remitente*"
+                  onChange={(e) => {
+                    const value = Number(e.target.value);  // Convertir a número
+                    setSelectedCardA(value);  // Actualiza la tarjeta seleccionada
 
-              const selectedOption = accountsData?.data.find((option: any) => option.id === value);
-              setSelectedCardType(selectedOption.type);
-            }}
-          >
-            {isLoadingAccounts ? (
-              <MenuItem disabled>Cargando...</MenuItem>
-            ) : (
-              accountsData?.data.map((option: any) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {`${formatTransactionType(option.type)} - ${option.bank_name}`}
-                </MenuItem>
-              ))
-            )}
-          </TextField>
+                    setSelectedCardType("debit");
+                  }}
+                >
+                  {isLoadingAccounts ? (
+                    <MenuItem disabled>Cargando...</MenuItem>
+                  ) : (
+                    accountsData?.filter((option: any) => option.type === "debit").map((option: any) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                      </MenuItem>
+                    ))
+                  )}
+                </TextField>
+                <TextField
+                  disabled={movementType === undefined}
+                  required
+                  className="w-full"
+                  id="account-select"
+                  select
+                  label="Cuenta de crédito"
+                  value={selectedCardB}
+                  helperText="Selecciona la cuenta de banco destinataria*"
+                  onChange={(e) => {
+                    const value = Number(e.target.value);  // Convertir a número
+                    setSelectedCardB(value);  // Actualiza la tarjeta seleccionada
+
+                    setSelectedCardType("debit");
+                  }}
+                >
+                  {isLoadingAccounts ? (
+                    <MenuItem disabled>Cargando...</MenuItem>
+                  ) : (
+                    accountsData?.filter((option: any) => option.type === "credit").map((option: any) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                      </MenuItem>
+                    ))
+                  )}
+                </TextField>
+              </div>
+              :
+              <TextField
+                disabled={movementType === undefined}
+                required
+                className="w-full"
+                id="account-select"
+                select
+                label="Cuenta de banco"
+                value={selectedCard}
+                helperText="Selecciona una cuenta de banco*"
+                onChange={(e) => {
+                  const value = Number(e.target.value);  // Convertir a número
+                  setSelectedCard(value);  // Actualiza la tarjeta seleccionada
+
+                  const selectedOption = accountsData?.find((option: any) => option.id === value);
+                  setSelectedCardType(selectedOption.type);
+                }}
+              >
+                {isLoadingAccounts ? (
+                  <MenuItem disabled>Cargando...</MenuItem>
+                ) : (
+                  movementType === 1 ?
+                    accountsData?.filter((option: any) => option.type === "debit").map((option: any) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                      </MenuItem>
+                    )) :
+                    accountsData?.filter((option: any) => option.type === "credit").map((option: any) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {`${formatTransactionType(option.type)} - ${option.bank_name}`}
+                      </MenuItem>
+                    ))
+                )}
+              </TextField>
+          }
+
 
           {/* DETALLES DE LA TRANSACCIÓN */}
           <h1 className="text-base font-medium text-center">Detalles de la transacción</h1>

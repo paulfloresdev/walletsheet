@@ -1,10 +1,14 @@
 // components/Month.tsx
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { formatCurrency, formatTransactionType, fortmatMonth } from "../utils/Formtater";
+import { formatCurrency, formatDate, formatTransactionType, fortmatMonth } from "../utils/Formtater";
 import { useFetchMonthData } from "../hooks/useFetch";
 import { useAuth } from "../context/AuthContext";
 import BottomNav from "../components/BottomNav";
+import AccountCard from "../components/AccountCard";
+import { Icon } from "@mui/material";
+import { ElectricalServices } from "@mui/icons-material";
+import CategoryIcon from "../components/CategoryIcon";
 
 const Month: React.FC = () => {
     const { token } = useAuth();
@@ -39,51 +43,50 @@ const Month: React.FC = () => {
         <div className="w-full min-h-screen pt-8 pb-16 px-5 md:px-72 flex flex-col justify-start items-center space-y-8">
             <h1 className="text-xl font-bold">WalletSheet</h1>
 
-            {/** SUMATORIAS */}
-            {
-                data?.period == '' 
-            }
-            
-            <div className="w-full flex flex-col space-y-6">
-                <h1 className="text-base font-medium text-center">{`${fortmatMonth(month ?? 0)} ${year}`}</h1>
+            <h1 className="text-base font-medium text-center">{`${fortmatMonth(month ?? 0)} ${year}`}</h1>
 
-                <div className="w-full flex flex-row justify-between">
-                    <div className="w-full text-center">
-                        <h1 className="font-semibold">{formatCurrency(data?.sum_by_type.income)}</h1>
-                        <h1 className="text-sm">Ingresos</h1>
+            <div className="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 space-x-0 md:space-x-8">
+                <div className="w-full md:w-1/2 flex flex-col space-y-8">
+                    <div className="w-full space-y-4">
+                        <h1>Cuentas de débito ({data?.balances.filter((option: any) => option.type === 'debit').length})</h1>
+                        {data?.balances.filter((option: any) => option.type === 'debit').map((account: any) => (
+                            <AccountCard account={account}></AccountCard>
+                        ))}
                     </div>
-                    <div className="w-full text-center">
-                        <h1 className="font-semibold">{formatCurrency(data?.sum_by_type.expense)}</h1>
-                        <h1 className="text-sm">Egresos</h1>
-                    </div>
-                    <div className="w-full text-center">
-                        <h1 className="font-semibold">{formatCurrency(data?.sum_by_type.payment)}</h1>
-                        <h1 className="text-sm">Pagos de cuentas</h1>
+                    <div className="w-full space-y-4">
+                        <h1>Cuentas de crédito ({data?.balances.filter((option: any) => option.type === 'credit').length})</h1>
+                        {data?.balances.filter((option: any) => option.type === 'credit').map((account: any) => (
+                            <AccountCard account={account}></AccountCard>
+                        ))}
                     </div>
                 </div>
-            </div>
 
-            <div className="w-full space-y-4">
-            {data?.balances.map((account: any) => (
-                <div className="w-full p-4 border-2 border-solid border-primary rounded-lg" key={account.id}>
-                    <div className="w-full flex flex-col items-start">
-                        <h1 className="font-medium">{account.name}</h1>
-                        <h1 className="text-sm text-gray-500 font-medium">{formatTransactionType(account.type)}</h1>
-                        <div className="w-full flex flex-row mt-6">
-                            <div className="w-full text-center">
-                                <h1 className={`font-semibold ${(parseFloat(account.initial_balance) < 0) ? 'text-red-500' : ''}`}>{formatCurrency(parseFloat(account.initial_balance))}</h1>
-                                <h1 className="text-sm">{account.type == 'debit' ? 'Saldo inicial' : 'Adeudo Inicial'}</h1>
+                <div className="w-full flex flex-col">
+                    <h1>Transacciones ({data?.transactions.length})</h1>
+                    {data?.transactions.map((transaction: any) => (
+                        <div key={transaction.id} className="w-full border-b-2 border-gray-100 py-8 hover:bg-gray-50">
+                            <div className="w-full flex flex-row justify-between">
+                                <div className="flex flex-row space-x-2">
+                                    <div className="w-12 h-12 bg-gray-100 rounded-full flex flex-col items-center justify-center">
+                                        <CategoryIcon category={transaction.category.name} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h1 className="font-medium hover:underline cursor-pointer">{transaction.concept}</h1>
+                                        <h1 className="text-sm">{formatDate(transaction.transaction_date)}</h1>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-end space-y-1">
+                                    <h1 className="font-medium">{formatCurrency(parseFloat(transaction.amount))}</h1>
+                                    <h1 className="text-sm">{transaction.account.bank_name}</h1>
+                                </div>
                             </div>
-                            <div className="w-full text-center">
-                                <h1 className={`font-semibold ${(parseFloat(account.final_balance) < 0) ? 'text-red-500' : ''}`}>{formatCurrency(parseFloat(account.final_balance))}</h1>
-                                <h1 className="text-sm">{account.type == 'debit' ? 'Saldo final' : 'Adeudo final'}</h1>
-                            </div>
+
                         </div>
-                    </div>
-                    
+                    ))}
                 </div>
-            ))}
             </div>
+
 
             <BottomNav />
         </div>
