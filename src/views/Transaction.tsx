@@ -8,7 +8,6 @@ import { getApiBaseUrl } from "../utils/apiConfig";
 import { useAuth } from "../context/AuthContext";
 import { Alert, Snackbar } from "@mui/material";
 
-
 interface DetailItemProps {
     label: string;
     value: string | number | undefined;
@@ -37,6 +36,11 @@ const Transaction: React.FC = () => {
 
     const handleDelete = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta transacción?");
+        if (!confirmDelete) {
+            return;
+        }
 
         try {
             const response = await fetch(`${getApiBaseUrl()}/transactions/${transaction.id}`, {
