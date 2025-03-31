@@ -109,6 +109,45 @@ const Month: React.FC = () => {
       <h1 className="text-xl font-bold">WalletSheet</h1>
       <h1 className="text-base font-medium text-center">{`${fortmatMonth(month ?? 0)} ${year}`}</h1>
 
+      <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 space-x-0 md:space-x-4">
+  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
+    <h1 className="font-medium">
+      {
+        formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
+      }
+    </h1>
+    <h1 className="text-sm">Capital actual</h1>
+  </div>
+  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
+    <h1 className="font-medium">
+      {
+        formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
+      }
+    </h1>
+    <h1 className="text-sm">Deudas a pagar</h1>
+  </div>
+  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
+    <h1
+      className="font-medium"
+      style={{
+        color:
+          Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+          Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) < 0
+            ? 'red'
+            : 'green',
+      }}
+    >
+      {formatCurrency(
+        Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+        Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0))
+      )}
+    </h1>
+    <h1 className="text-sm">Balance calculado</h1>
+  </div>
+</div>
+
+
+
       <div className="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 space-x-0 md:space-x-8 pb-20">
         <div className="w-full md:w-5/12 flex flex-col space-y-8">
           <div className="w-full space-y-4">
