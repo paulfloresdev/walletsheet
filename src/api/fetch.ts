@@ -4,13 +4,11 @@ export const fetchIndexAccount = async (token: string) => {
     const baseUrl = getApiBaseUrl();
     if (!baseUrl) throw new Error("Base URL is undefined");
 
-    const url = `${baseUrl}/accounts/`; // Construcción manual de la URL
+    const url = `${baseUrl}/accounts`; // Construcción manual de la URL
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
     });
@@ -31,13 +29,11 @@ export const fetchIndexCategories = async (token: string) => {
     const baseUrl = getApiBaseUrl();
     if (!baseUrl) throw new Error("Base URL is undefined");
 
-    const url = `${baseUrl}/categories/`; // Construcción manual de la URL
+    const url = `${baseUrl}/categories`; // Construcción manual de la URL
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
     });
@@ -58,13 +54,11 @@ export const fetchIndexMonths = async (token: string) => {
     const baseUrl = getApiBaseUrl();
     if (!baseUrl) throw new Error("Base URL is undefined");
 
-    const url = `${baseUrl}/transaction-months/`; // Construcción manual de la URL
+    const url = `${baseUrl}/transaction-months`; // Construcción manual de la URL
 
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
     });
@@ -90,8 +84,6 @@ export const fetchMonthData = async (token: string, month: string, year: string)
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
     });
