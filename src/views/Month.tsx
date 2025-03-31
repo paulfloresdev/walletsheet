@@ -206,15 +206,19 @@ const Month: React.FC = () => {
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex flex-col items-center justify-center">
                     <CategoryIcon category={transaction.category.name} />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <h1 className="font-medium hover:underline cursor-pointer">{transaction.concept}</h1>
                     <h1 className="text-sm">{formatDate(transaction.transaction_date)}</h1>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end space-y-1">
+                <div className="flex flex-col items-end space-y-2">
                   <h1 className="font-medium">{formatCurrency(parseFloat(transaction.amount))}</h1>
+                  
+                  <div className="flex flex-col items-end">
                   <h1 className="text-sm">{transaction.account.bank_name}</h1>
+                    <h1 className="text-sm font-medium text-gray-500">{formatAccountType(transaction.account.type)}</h1>
+                  </div>
                 </div>
               </div>
             </div>
