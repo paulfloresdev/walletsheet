@@ -42,6 +42,10 @@ export const formatDate = (dateString: string) => {
     year: 'numeric'
   };
 
+  // Crear la fecha y ajustar la zona horaria
   const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', options).replace('.', '');
+  const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+  return adjustedDate.toLocaleDateString('es-ES', options).replace('.', '');
 };
+
