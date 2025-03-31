@@ -8,24 +8,37 @@ import { getApiBaseUrl } from "../utils/apiConfig";
 import { useAuth } from "../context/AuthContext";
 import { Alert, Snackbar } from "@mui/material";
 
+
+interface DetailItemProps {
+    label: string;
+    value: string | number | undefined;
+}
+
+const DetailItem: React.FC<DetailItemProps> = ({ label, value }) => {
+    return (
+        <div className="w-full flex flex-row justify-between">
+            <h1>{label}</h1>
+            <h1 className="font-medium">{value ?? 'Desconocido'}</h1>
+        </div>
+    );
+}
+
 const Transaction: React.FC = () => {
     const location = useLocation();
     const { token } = useAuth();
     const navigate = useNavigate();
-    
-    // Obtenemos el mes y el año desde el state pasado por navigate
-    const { transaction } = location.state || { transaction: null };
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+    const { transaction } = location.state || { transaction: null };
     const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    if (!transaction) {
+        return <div>No se encontró la transacción</div>;
+    }
 
     const handleDelete = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Activar el loading
-    
+
         try {
-            // Usar la URL base desde el archivo apiConfig
             const response = await fetch(`${getApiBaseUrl()}/transactions/${transaction.id}`, {
                 method: "DELETE",
                 headers: {
@@ -35,22 +48,20 @@ const Transaction: React.FC = () => {
                 }
             });
 
-            // Verificar si la respuesta fue exitosa
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
-                setError(null); // Limpiar el error
-                setOpenSnackbar(true); // Abrir Snackbar de éxito
-                navigate("/month", { state: { month: parseFloat(transaction.accounting_date.slice(5, 7)), year: transaction.accounting_date.slice(0, 4) } });
+                setOpenSnackbar(true);
+                navigate("/month", {
+                    state: {
+                        month: parseFloat(transaction.accounting_date.slice(5, 7)),
+                        year: transaction.accounting_date.slice(0, 4)
+                    }
+                });
             } else {
                 const errorData = await response.json();
-                setError(errorData || "Hubo un error");
+                console.error("Error al eliminar:", errorData);
             }
         } catch (error) {
-            setError("Hubo un problema con la conexión al servidor");
             console.error("Error de conexión:", error);
-        } finally {
-            setLoading(false); // Desactivar el loading
         }
     };
 
@@ -64,14 +75,14 @@ const Transaction: React.FC = () => {
             </div>
 
             <h1 className="font-medium">{transaction.concept}</h1>
-            <h1 className="font-medium text-lg">{formatCurrency(parseFloat(transaction.amount))}</h1>
+            <h1 className="font-medium text-lg">
+                {formatCurrency(Number(transaction.amount))}
+            </h1>
 
-            <form action="">
+            <form className="w-full">
                 <div className="w-full flex flex-row justify-center space-x-8 pb-8">
                     <div
-                        onClick={() => {
-                            navigate("/transaction/edit", { state: { transaction } });
-                        }}
+                        onClick={() => navigate("/transaction/edit", { state: { transaction } })}
                         className="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex flex-col items-center justify-center cursor-pointer"
                     >
                         <Edit className="text-gray-700" />
@@ -84,7 +95,6 @@ const Transaction: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Snackbar con Alert */}
                 <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
                     <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
                         ¡Transacción eliminada con éxito!
@@ -94,16 +104,34 @@ const Transaction: React.FC = () => {
 
             <div className="w-full flex flex-col space-y-4 pb-20">
                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                    <DetailItem label="Fecha de transacción" value={transaction.transaction_date}></DetailItem>
-                    <DetailItem label="Fecha de aplicación" value={transaction.accounting_date}></DetailItem>
-                    <DetailItem label="Cuenta de banco" value={transaction.account.bank_name}></DetailItem>
-                    <DetailItem label="Tipo de cuenta" value={formatAccountType(transaction.account.type)}></DetailItem>
-                    <DetailItem label="Tipo de movimiento" value={formatTransactionType(transaction.type)}></DetailItem>
-                    <DetailItem label="Lugar" value={transaction.place ?? 'Desconocido'}></DetailItem>
+                    <DetailItem
+                        label="Fecha de transacción"
+                        value={formatDate(transaction.transaction_date)}
+                    />
+                    <DetailItem
+                        label="Fecha de aplicación"
+                        value={formatDate(transaction.accounting_date)}
+                    />
+                    <DetailItem
+                        label="Cuenta de banco"
+                        value={transaction.account.bank_name}
+                    />
+                    <DetailItem
+                        label="Tipo de cuenta"
+                        value={formatAccountType(transaction.account.type)}
+                    />
+                    <DetailItem
+                        label="Tipo de movimiento"
+                        value={formatTransactionType(transaction.type)}
+                    />
+                    <DetailItem
+                        label="Lugar"
+                        value={transaction.place}
+                    />
                 </div>
                 <div className="w-full flex flex-col space-y-2">
                     <h1>Notas</h1>
-                    <h1 className="font-medium">{transaction.note ?? 'Sin notas'}</h1>
+                    <h1 className="font-medium">{transaction.note || 'Sin notas'}</h1>
                 </div>
             </div>
 
@@ -113,18 +141,3 @@ const Transaction: React.FC = () => {
 }
 
 export default Transaction;
-
-interface DetailItemProps {
-    label: string;
-    value: any;
-}
-
-const DetailItem: React.FC<DetailItemProps> = ({ label, value }) => {
-    return (
-        <div className="w-full flex flex-row justify-between">
-            <h1>{label}</h1>
-            <h1 className="font-medium">{value}</h1>
-        </div>
-    );
-}
-

@@ -9,6 +9,7 @@ const MonthList = React.lazy(() => import("../views/MonthList.tsx"));
 const Month = React.lazy(() => import("../views/Month.tsx"));
 const Transaction = React.lazy(() => import("../views/Transaction.tsx"));
 const EditTransaction = React.lazy(() => import("../views/EditTransaction.tsx"));
+const Accounts = React.lazy(() => import("../views/Accounts.tsx"));
 
 const AppRoutes = () => (
     <Routes>
@@ -17,7 +18,7 @@ const AppRoutes = () => (
             path="/"
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <SplashScreen/>
+                    <SplashScreen />
                 </React.Suspense>
             }
         />
@@ -25,7 +26,7 @@ const AppRoutes = () => (
             path="/home"
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <Home/>
+                    <Home />
                 </React.Suspense>
             }
         />
@@ -33,7 +34,7 @@ const AppRoutes = () => (
             path="/login"
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <Login/>
+                    <Login />
                 </React.Suspense>
             }
         />
@@ -41,7 +42,7 @@ const AppRoutes = () => (
             path="/months"
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <MonthList/>
+                    <MonthList />
                 </React.Suspense>
             }
         />
@@ -49,7 +50,7 @@ const AppRoutes = () => (
             path="/month/"
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
-                    <Month/>
+                    <Month />
                 </React.Suspense>
             }
         />
@@ -66,6 +67,14 @@ const AppRoutes = () => (
             element={
                 <React.Suspense fallback={<div>Loading...</div>}>
                     <EditTransaction></EditTransaction>
+                </React.Suspense>
+            }
+        />
+        <Route
+            path="/accounts"
+            element={
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <Accounts />
                 </React.Suspense>
             }
         />

@@ -4,27 +4,41 @@ import { useFetchIndexMonths } from "../hooks/useFetch";
 import { useAuth } from "../context/AuthContext";
 import { fortmatMonth } from "../utils/Formtater";
 import { TextField, MenuItem } from "@mui/material";
-import { ArrowForwardIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+
+// Definición de tipos
+interface MonthData {
+  month_number: number;
+  year: number;
+}
+
+interface MonthListData extends Array<MonthData> { }
 
 const MonthList: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const { data, isLoading, error, refetch } = useFetchIndexMonths(token ?? "");
+  const { data, refetch } = useFetchIndexMonths(token ?? "") as {
+    data: MonthListData | undefined;
+    refetch: () => void;
+  };
 
   // Estado para el año seleccionado
   const [selectedYear, setSelectedYear] = useState<number | "all">("all");
 
   // Obtener años únicos para el filtro
-  const uniqueYears = Array.from(new Set(data?.map((item: any) => item.year))) ?? [];
+  const uniqueYears = Array.from(
+    new Set(data?.map((item: MonthData) => item.year))
+  ) ?? [];
 
   // Filtrar datos según el año seleccionado
-  const filteredData = selectedYear === "all" ? data : data?.filter((item: any) => item.year === selectedYear);
+  const filteredData = selectedYear === "all"
+    ? data
+    : data?.filter((item: MonthData) => item.year === selectedYear);
 
-  // Refrescar los datos cada vez que cambie el año o el mes
+  // Refrescar los datos cada vez que cambie el año
   useEffect(() => {
     if (selectedYear !== "all") {
-      refetch(); // Refresca los datos cuando cambies de año
+      refetch();
     }
   }, [selectedYear, refetch]);
 
@@ -45,43 +59,42 @@ const MonthList: React.FC = () => {
           helperText="Filtrar por año"
           onChange={(e) => setSelectedYear(e.target.value as number | "all")}
         >
-          <MenuItem value="all">Todos</MenuItem>  {/* Opción para todos los años */}
-          {uniqueYears?.map((year) => (
+          <MenuItem value="all">Todos</MenuItem>
+          {uniqueYears.map((year: number) => (
             <MenuItem key={year} value={year}>
               {year}
             </MenuItem>
           ))}
         </TextField>
       </div>
-      
 
       {/** LISTADO DE MESES CON MOVIMIENTOS */}
-      {Array.isArray(filteredData) && filteredData.length > 0 ? (
-            <div className="w-full flex flex-col space-y-4 pb-20 items-start">
-              <h1 className="text-base">{`Meses con transacciones ${selectedYear === 'all' ? '' : `en ${selectedYear}`} (${filteredData?.length.toString()})`}</h1>
-              <div className="w-full grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-4">
-                {
-                  filteredData.map((item: any) => (
-                    <button
-                      onClick={() => {
-                        const month = item.month_number;
-                        const year = item.year;
-                        navigate("/month", { state: { month, year } });
-                      }}
-                      key={item.month_number}
-                      className="w-full hover:bg-gray-100 border-2 border-solid border-primary rounded-lg p-4 flex flex-col space-y-4 justify-center items-center"
-                    >
-                      <h1 className="font-medium">{fortmatMonth(item.month_number)}</h1>
-                      <h1 className="text-sm">{item.year}</h1>
-                    </button>
-                  ))
-                }
-              </div>
-            </div>
-            
-          ) : (
-            <p className="text-center">No se encontraron meses con transacciones.</p>
-          )}
+      {filteredData && filteredData.length > 0 ? (
+        <div className="w-full flex flex-col space-y-4 pb-20 items-start">
+          <h1 className="text-base">
+            {`Meses con transacciones ${selectedYear === 'all' ? '' : `en ${selectedYear}`} (${filteredData.length})`}
+          </h1>
+          <div className="w-full grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-4">
+            {filteredData.map((item: MonthData) => (
+              <button
+                onClick={() => navigate("/month", {
+                  state: {
+                    month: item.month_number,
+                    year: item.year
+                  }
+                })}
+                key={`${item.year}-${item.month_number}`}
+                className="w-full hover:bg-gray-100 border-2 border-solid border-primary rounded-lg p-4 flex flex-col space-y-4 justify-center items-center"
+              >
+                <h1 className="font-medium">{fortmatMonth(item.month_number)}</h1>
+                <h1 className="text-sm">{item.year}</h1>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p className="text-center">No se encontraron meses con transacciones.</p>
+      )}
 
       <BottomNav />
     </div>

@@ -1,10 +1,17 @@
-// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// Definición de tipos para el usuario
+interface User {
+  id: string | number;
+  name: string;
+  email: string;
+  // Añade aquí cualquier otra propiedad del usuario que necesites
+}
+
 interface AuthContextType {
-  user: any;
+  user: User | null;
   token: string | null;
-  login: (token: string) => void;
+  login: (token: string, userData?: User) => void;
   logout: () => void;
 }
 
@@ -12,26 +19,40 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Este useEffect inicializa el token desde el localStorage
+  // Inicializa el token y los datos del usuario desde el localStorage
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
     if (storedToken) {
       setToken(storedToken);
     }
+
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing user data", error);
+      }
+    }
   }, []);
 
-  const login = (token: string) => {
+  const login = (token: string, userData?: User) => {
     setToken(token);
-    localStorage.setItem("token", token); // Guarda el token en el localStorage
-    // Aquí puedes hacer cualquier lógica adicional, como obtener datos del usuario
+    if (userData) {
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    }
+    localStorage.setItem("token", token);
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem("token"); // Elimina el token del localStorage al cerrar sesión
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   return (
@@ -41,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+// Hook personalizado para usar el contexto
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

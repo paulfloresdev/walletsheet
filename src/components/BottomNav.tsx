@@ -7,15 +7,18 @@ const BottomNav = () => {
   const location = useLocation(); // Obtener la ruta actual
 
   // Verificar si la ruta corresponde a una página de mes (/month/:year/:monthNumber) o a /transaction o /transaction/edit
-  const isMonthPage = /^\/month(\/\d{4}\/\d{1,2})?$/.test(location.pathname) || 
-                      location.pathname === "/transaction" || 
-                      location.pathname === "/transaction/edit";
+  const isMonthPage = /^\/month(\/\d{4}\/\d{1,2})?$/.test(location.pathname) ||
+    location.pathname === "/transaction" ||
+    location.pathname === "/transaction/edit";
 
   return (
     <BottomNavigation
       showLabels
       value={location.pathname} // Usa la ruta actual como valor
-      onChange={(event, newValue) => navigate(newValue)} // Navega a la nueva ruta
+      onChange={(event, newValue) => {
+        navigate(newValue);
+        event.preventDefault();
+      }} // Navega a la nueva ruta
       sx={{
         position: "fixed",
         bottom: 0,
@@ -24,7 +27,7 @@ const BottomNav = () => {
         boxShadow: 4,
         zIndex: 50,
       }}
-    > 
+    >
       <BottomNavigationAction
         label="Inicio"
         icon={<Home />}
