@@ -154,8 +154,8 @@ const Month: React.FC = () => {
         </div>
         <div className="w-full md:w-1/5 p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
             <h1
-              className={`font-semibold ${Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
-                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) < 0 ? 'text-rose-600' : 'text-teal-600'}`}
+              className={`font-semibold ${(Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))-Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.initial_balance), 0)) ? 'text-red-500' : 'text-teal-600'}`}
               
             >
               {formatCurrency(
