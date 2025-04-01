@@ -110,41 +110,64 @@ const Month: React.FC = () => {
       <h1 className="text-base font-medium text-center">{`${fortmatMonth(month ?? 0)} ${year}`}</h1>
 
       <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 space-x-0 md:space-x-4">
-  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
-    <h1 className="font-medium">
-      {
-        formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
-      }
-    </h1>
-    <h1 className="text-sm">Capital actual</h1>
-  </div>
-  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
-    <h1 className="font-medium">
-      {
-        formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
-      }
-    </h1>
-    <h1 className="text-sm">Deudas a pagar</h1>
-  </div>
-  <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1">
-    <h1
-      className="font-medium"
-      style={{
-        color:
-          Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
-          Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) < 0
-            ? 'red'
-            : 'green',
-      }}
-    >
-      {formatCurrency(
-        Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
-        Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0))
-      )}
-    </h1>
-    <h1 className="text-sm">Balance calculado</h1>
-  </div>
-</div>
+        <div className="w-full md:w-2/5 flex flex-row space-x-4">
+          <div className="w-full md:1/2 p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
+            <h1 className="font-semibold">
+              {
+                formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
+              }
+            </h1>
+            <h1 className="text-sm">Capital final antes de deudas</h1>
+          </div>
+          <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
+            <h1 className="font-semibold">
+              {
+                formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))
+              }
+            </h1>
+            <h1 className="text-sm">Deudas a pagar</h1>
+          </div>
+        </div>
+
+        <div className="w-full md:w-2/5  flex flex-row space-x-4">
+          <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
+            <h1 className="font-semibold">
+              {
+                formatCurrency(Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.initial_balance), 0)))
+              }
+            </h1>
+            <h1 className="text-sm">Capital inicial</h1>
+          </div>
+          <div className="w-full p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
+            <h1
+              className={`font-semibold ${Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) < 0 ? 'text-rose-600' : ''}`}
+              
+            >
+              {formatCurrency(
+                Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0))
+              )}
+            </h1>
+            <h1 className="text-sm">Capital final</h1>
+          </div>
+        </div>
+        <div className="w-full md:w-1/5 p-4 border-2 border-solid border-primary rounded-lg flex flex-col items-center space-y-1 text-center">
+            <h1
+              className={`font-semibold ${Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) < 0 ? 'text-rose-600' : 'text-teal-600'}`}
+              
+            >
+              {formatCurrency(
+                (Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)) +
+                Number(data?.balances?.filter((b: Balance) => b.type === 'credit').reduce((acc: number, balance: Balance) => acc + Number(balance.final_balance), 0)))-Number(data?.balances?.filter((b: Balance) => b.type === 'debit').reduce((acc: number, balance: Balance) => acc + Number(balance.initial_balance), 0))
+              )}
+            </h1>
+            <h1 className="text-sm">Balance calculado</h1>
+          </div>
+  
+        
+      </div>
 
 
 
@@ -241,21 +264,21 @@ const Month: React.FC = () => {
               onClick={() => navigate("/transaction", { state: { transaction } })}
             >
               <div className="w-full flex flex-row justify-between">
-                <div className="flex flex-row space-x-2">
+                <div className="w-2/3 flex flex-row space-x-2">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex flex-col items-center justify-center">
                     <CategoryIcon category={transaction.category.name} />
                   </div>
-                  <div className="space-y-2">
-                    <h1 className="font-medium hover:underline cursor-pointer">{transaction.concept}</h1>
+                  <div className="w-3/4 space-y-2">
+                    <h1 className="font hover:underline cursor-pointer font-medium">{transaction.concept}</h1>
                     <h1 className="text-sm">{formatDate(transaction.transaction_date)}</h1>
                   </div>
                 </div>
 
                 <div className="flex flex-col items-end space-y-2">
-                  <h1 className="font-medium">{formatCurrency(parseFloat(transaction.amount))}</h1>
+                  <h1 className={`font-semibold ${transaction.type === 'income' ? 'text-teal-600' : 'text-rose-600'}`}>{formatCurrency(parseFloat(transaction.amount))}</h1>
                   
                   <div className="flex flex-col items-end">
-                  <h1 className="text-sm">{transaction.account.bank_name}</h1>
+                  <h1 className="text-sm ">{transaction.account.bank_name}</h1>
                     <h1 className="text-sm font-medium text-gray-500">{formatAccountType(transaction.account.type)}</h1>
                   </div>
                 </div>
